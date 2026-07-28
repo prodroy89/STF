@@ -19,11 +19,28 @@
 #
 
 # import modules
-use strict;
-use FindBin qw($Bin);
-use lib "$Bin";
 
-# standard perl modules
+use strict;
+use warnings;
+
+use FindBin qw($Bin);
+use Cwd qw(abs_path);
+use File::Basename qw(dirname);
+
+my $scriptDir = $Bin;
+
+if (!defined($scriptDir)
+    || $scriptDir eq ''
+    || $scriptDir eq '.'
+    || $scriptDir =~ m!^/home/!)
+{
+    my $path = abs_path($0);
+    $path =~ s!\\!/!g;
+    $scriptDir = dirname($path);
+}
+
+use lib $scriptDir;
+
 use File::Path qw(mkpath rmtree);
 use File::Basename;
 
@@ -32,7 +49,9 @@ use stf::Constants qw(:all);
 use stf::Commands qw(:all);
 use stfArguments;
 
-use Cwd 'abs_path';
+print STDERR "FindBin::Bin = $Bin\n";
+print STDERR "Script = $0\n";
+print STDERR join("\n", @INC), "\n";
 
 # This constant controls the number of old results directories that are retained
 my $results_retention_number = 10;
