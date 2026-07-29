@@ -37,30 +37,35 @@
 # import modules
 use strict;
 
-use FindBin qw($Bin);
-use File::Basename qw(dirname);
 use Cwd qw(abs_path);
+use File::Basename qw(dirname);
 
-#
-# Fix for Windows/Cygwin Jenkins:
-# Sometimes FindBin incorrectly sets $Bin to /home/jenkins when stf.pl is
-# invoked using a Windows path (C:\... or C:/...). In that case, rebuild the
-# script directory from $0.
-#
 BEGIN {
-    my $script_dir = $Bin;
+    my $script_dir;
 
-    # If FindBin did not locate the STF modules, derive the directory
-    # from the absolute script path.
-    unless (-f "$script_dir/stf/stfUtility.pm") {
+    # Try FindBin first
+    eval {
+        require FindBin;
+        FindBin->import(qw($Bin));
+        $script_dir = $FindBin::Bin;
+    };
+
+    # If FindBin failed or returned something invalid
+    if (!$script_dir || !-d $script_dir || !-e "$script_dir/stf/stfUtility.pm") {
+
         my $script = abs_path($0);
-        $script_dir = dirname($script);
+
+        if ($script) {
+            $script_dir = dirname($script);
+        }
     }
+
+    die "Unable to determine STF script directory\n"
+        unless defined $script_dir;
 
     unshift(@INC, $script_dir);
 }
 
-# standard perl modules
 use File::Path qw(mkpath rmtree);
 
 use stf::stfUtility;
