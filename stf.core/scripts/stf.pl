@@ -36,12 +36,32 @@
 
 # import modules
 use strict;
-use FindBin qw($Bin);
+use FindBin qw($Bin $RealBin);
 use File::Spec;
+use Cwd qw(abs_path);
 
-use lib $Bin;
-use lib File::Spec->catdir($Bin, '..', 'lib');
+my $script_dir = abs_path($RealBin);
 
+# Normalize Windows backslashes if present
+$script_dir =~ s{\\}{/}g if defined $script_dir;
+
+my $lib_dir = File::Spec->catdir($script_dir, '..', 'lib');
+
+unshift(@INC, $script_dir) if defined $script_dir && -d $script_dir;
+unshift(@INC, $lib_dir)    if defined $lib_dir    && -d $lib_dir;
+
+# DEBUG
+print STDERR "========== STF DEBUG ==========\n";
+print STDERR "\$0        = $0\n";
+print STDERR "\$Bin      = $Bin\n";
+print STDERR "\$RealBin  = $RealBin\n";
+print STDERR "script_dir = $script_dir\n";
+print STDERR "lib_dir    = $lib_dir\n";
+print STDERR "\@INC:\n";
+print STDERR join("\n", @INC), "\n";
+print STDERR "===============================\n";
+
+# standard perl modules
 use File::Path qw(mkpath rmtree);
 use File::Basename;
 
