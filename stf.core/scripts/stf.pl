@@ -36,37 +36,14 @@
 
 # import modules
 use strict;
+use FindBin qw($Bin);
+use File::Spec;
 
-use Cwd qw(abs_path);
-use File::Basename qw(dirname);
-
-BEGIN {
-    my $script_dir;
-
-    # Try FindBin first
-    eval {
-        require FindBin;
-        FindBin->import(qw($Bin));
-        $script_dir = $FindBin::Bin;
-    };
-
-    # If FindBin failed or returned something invalid
-    if (!$script_dir || !-d $script_dir || !-e "$script_dir/stf/stfUtility.pm") {
-
-        my $script = abs_path($0);
-
-        if ($script) {
-            $script_dir = dirname($script);
-        }
-    }
-
-    die "Unable to determine STF script directory\n"
-        unless defined $script_dir;
-
-    unshift(@INC, $script_dir);
-}
+use lib $Bin;
+use lib File::Spec->catdir($Bin, '..', 'lib');
 
 use File::Path qw(mkpath rmtree);
+use File::Basename;
 
 use stf::stfUtility;
 use stf::Constants qw(:all);
