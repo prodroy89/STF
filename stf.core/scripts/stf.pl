@@ -36,6 +36,7 @@
 
 # import modules
 use strict;
+use FindBin qw($Bin);
 use File::Basename qw(dirname);
 use Cwd qw(abs_path);
 
@@ -55,6 +56,7 @@ BEGIN {
 
     print STDERR "===== STF DEBUG =====\n";
     print STDERR "\$0         = $0\n";
+    print STDERR "\$Bin       = $Bin\n";
     print STDERR "script_dir = $script_dir\n";
     print STDERR "\@INC:\n";
     print STDERR join("\n", @INC), "\n";
