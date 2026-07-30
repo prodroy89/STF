@@ -192,7 +192,7 @@ sub getPathSeparator {
 	my ($self) = @_;
 
 	my $ps = ":";
-	if ($^O eq 'MSWin32') {
+	if ($^O eq 'MSWin32' || $^O eq 'cygwin') {
 	    $ps = ";";
 	}
 	
@@ -211,7 +211,7 @@ sub getPathSeparator {
 #  win, linux, zos, aix, osx, or bsd
 #------------------------------------------------------------#
 sub getPlatform {
-	if ($^O eq 'MSWin32') {
+	if ($^O eq 'MSWin32' || $^O eq 'cygwin') {
 		return "win";
 	}
 	elsif ($^O eq 'linux') {
@@ -312,7 +312,7 @@ sub getDelimiter {
 	my ($self) = @_;
 	
 	my $delimiter = '/';
-	if ($^O eq "MSWin32") {
+	if ($^O eq "MSWin32" || $^O eq "cygwin") {
 		$delimiter = '\\';		
 	}
 	
@@ -334,7 +334,7 @@ sub getQuote {
 	my ($self) = @_;
 
 	my $quote = "\'";
-	if ($^O eq 'MSWin32') {
+	if ($^O eq 'MSWin32' || $^O eq 'cygwin') {
     	$quote = "\"";
 	}
 	
@@ -519,7 +519,7 @@ sub splatTree {
 	    die "Error: stfUtility.pm: splatTree directory argument not supplied or blank\n";
 	}
 	
-	if ($^O eq "MSWin32" ) {
+	if ($^O eq "MSWin32" || $^O eq "cygwin" ) {
 		# Some tests create directories that are so long that rmtree will die
 		stf::stfUtility->shortenPaths(dir => $dir);
 	}
@@ -1000,7 +1000,7 @@ sub getJavaVersionInfo {
 	my %java_details;
 	 
     my $tempInst;
-    if ($^O eq "MSWin32" ) {
+    if ($^O eq "MSWin32" || $^O eq "cygwin" ) {
 		$tempInst = File::Temp::tempdir(CLEANUP => 1);
 	} else { 
 		$tempInst="/tmp";
@@ -1377,7 +1377,7 @@ sub getJavaProperties {
 	my %java_properties;
 	 
     my $tempInst;
-    if ($^O eq "MSWin32" ) {
+    if ($^O eq "MSWin32" || $^O eq "cygwin" ) {
 		$tempInst = File::Temp::tempdir(CLEANUP => 1);
 	} else { 
 		$tempInst="/tmp";

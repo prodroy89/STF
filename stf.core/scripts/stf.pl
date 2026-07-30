@@ -85,7 +85,7 @@ $ENV{'loggingLevel'} = "WARN";
 # Set a platform specific default value for a temp directory.
 # This value is used for results-root, unless an alternative directory is specified on the command line.
 $ENV{'STF_TEMP'} = '/tmp/stf';
-if ( $^O eq 'MSWin32' ) {
+if ( $^O eq 'MSWin32' || $^O eq 'cygwin' ) {
 	$ENV{'STF_TEMP'} = 'C:\stf_temp';
 }
 
@@ -382,7 +382,7 @@ if (defined $symlink_supported && $symlink_supported eq 1 && $createResultsSymLi
 # On Windows, assign T: to the test directory.
 # Some tests (e.g. the JCK) have been known to create very long paths which can exceed the Win32 limit of 260 chars.
 # Using a substituted drive letter instead avoids the limit.
-#if ($^O eq 'MSWin32') {
+#if ($^O eq 'MSWin32' || $^O eq 'cygwin') {
 #    # subst might not work with forward slashes or escaped backslashes, so remove any that are there.
 #    $test_dir =~ s,/,\\,g;
 #    $test_dir =~ s,\\\\,\\,g;
@@ -773,7 +773,7 @@ sub check_free_space {
 	my $cmd = "";
 	my @df_output = ();
 	print "Retrieving amount of free space on drive containing " .  $results_root . "\n";
-	if ($^O eq 'MSWin32') {
+	if ($^O eq 'MSWin32' || $^O eq 'cygwin') {
 		# dir doesn't work with forward slashes or escaped backslashes, so remove any that are there.
 		$results_root =~ s,/,\\,g;
 		$results_root =~ s,\\\\,\\,g;
@@ -927,7 +927,7 @@ sub findElement {
 
 sub deleteDirectory {
 	my $doomed_directory = shift;
-	if ( $^O eq 'MSWin32' ) {
+	if ( $^O eq 'MSWin32' || $^O eq 'cygwin' ) {
 			my $cmd = "cmd /c rmdir /s /q \"$doomed_directory\"";
 			`$cmd`;
 			if ( $? ) {
