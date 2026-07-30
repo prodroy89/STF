@@ -51,6 +51,8 @@ BEGIN {
     die "Could not determine script directory\n"
         unless defined $script_dir;
 
+    $ENV{STF_SCRIPT_DIR} = $script_dir;
+
     unshift(@INC, $script_dir)
         if -d $script_dir;
 

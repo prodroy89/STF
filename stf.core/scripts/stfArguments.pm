@@ -14,8 +14,15 @@ package stfArguments;
 
 use strict;
 use warnings;
-use FindBin qw($Bin);
-use lib "$Bin";
+
+use File::Basename qw(dirname);
+use Cwd qw(abs_path);
+
+my $Bin = $ENV{STF_SCRIPT_DIR}
+       || abs_path(dirname(__FILE__));
+
+use lib $Bin;
+
 use stfArguments;
 
 my @stf_personal_properties = "";
@@ -25,18 +32,21 @@ my @stf_default_properties = "";
 # Registers property files for subsequent argument processing. 
 # This subroutine must be called before 'get_argument'
 sub set_argument_data {
-	my $stf_personal = shift;
-	my $stf_default = shift;
+    my $stf_personal = shift;
+    my $stf_default  = shift;
 
-	#print "\n";
- 	#print "stf_personal_properties: $stf_personal\n";
- 	#print "stf_default_properties: $stf_default\n";
-	
-	# Read in the contents of the configuration files
-	@stf_personal_properties           = read_file_contents($stf_personal);
-    @stf_default_properties            = read_file_contents($stf_default); 
+    print STDERR "STFARGS: stf_personal=$stf_personal\n";
+    print STDERR "STFARGS: stf_default=$stf_default\n";
+
+    @stf_personal_properties = read_file_contents($stf_personal);
+    @stf_default_properties  = read_file_contents($stf_default);
+
+    print STDERR "STFARGS: personal entries="
+                 . scalar(@stf_personal_properties) . "\n";
+
+    print STDERR "STFARGS: default entries="
+                 . scalar(@stf_default_properties) . "\n";
 }
-
 
 # Reads the contents of a file into an array
 sub read_file_contents
