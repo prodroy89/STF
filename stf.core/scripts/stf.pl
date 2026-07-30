@@ -100,7 +100,12 @@ if (!-e $stf_personal_properties) {
 
 # Locate the properties for this customisation of STF
 # Note: directory name is passed into abs_path to workaround old perl bug.
-my $stf_defaults = abs_path($Bin . "/../config") . "/stf.properties";
+# my $stf_defaults = abs_path($Bin . "/../config") . "/stf.properties";
+
+my $script_dir = abs_path(dirname($0));
+my $stf_defaults = abs_path($script_dir . "/../config") . "/stf.properties";
+
+print STDERR "stf_defaults=$stf_defaults\n";
 
 # Tell STF argument handling about the property files
 stfArguments::set_argument_data($stf_personal_properties, $stf_defaults);
@@ -448,7 +453,7 @@ my ($now, $date, $time) = stf::stfUtility->getNow(date => $TRUE, time => $TRUE);
 
 	# Write the stf arguments to a properties file
 	my $stf_parameters = $test_dir . "/stf_parameters.properties";
-	stfArguments::write_arguments_to_file $stf_parameters, $Bin, $updated_test_root, $updated_systemtest_prereqs;
+	stfArguments::write_arguments_to_file $stf_parameters, $script_dir, $updated_test_root, $updated_systemtest_prereqs;
 
 	# Move to the output directory
 	chdir($generation_dir);
@@ -474,7 +479,7 @@ my ($now, $date, $time) = stf::stfUtility->getNow(date => $TRUE, time => $TRUE);
 			  "$java_debug_settings" .
 			  " -Dlog4j.skipJansi=true" .  # Suppress warning on Windows
 			  " -Djava.system.class.loader=net.adoptopenjdk.stf.runner.StfClassLoader" .
-			  " -Dload.agent.path=$Bin/../../stf.load/bin/stf.load.jar" .
+			  " -Dload.agent.path=$script_dir/../../stf.load/bin/stf.load.jar" .
 			  " -classpath $asm_jar" . $sep . "$asm_commons_jar" . $sep . "$log4j_api_dir" . $sep . "$log4j_core_dir" . $sep . "$Bin/../bin" .
 			  " net.adoptopenjdk.stf.runner.StfRunner" .
 			  " -properties \"$stf_parameters, $stf_personal_properties, $stf_defaults\"" .
