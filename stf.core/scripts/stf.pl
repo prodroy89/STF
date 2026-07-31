@@ -102,8 +102,15 @@ if (!-e $stf_personal_properties) {
 # Note: directory name is passed into abs_path to workaround old perl bug.
 # my $stf_defaults = abs_path($Bin . "/../config") . "/stf.properties";
 
-my $script_dir = abs_path(dirname($0));
-my $stf_defaults = abs_path($script_dir . "/../config") . "/stf.properties";
+my $script_dir = abs_path(dirname(__FILE__));
+
+print STDERR "script_dir=$script_dir\n";
+
+my $config_dir = abs_path("$script_dir/../config");
+
+print STDERR "config_dir=$config_dir\n";
+
+my $stf_defaults = "$config_dir/stf.properties";
 
 print STDERR "stf_defaults=$stf_defaults\n";
 

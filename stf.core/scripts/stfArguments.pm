@@ -18,10 +18,18 @@ use warnings;
 use File::Basename qw(dirname);
 use Cwd qw(abs_path);
 
-my $Bin = $ENV{STF_SCRIPT_DIR}
-       || abs_path(dirname(__FILE__));
+# my $Bin = $ENV{STF_SCRIPT_DIR}
+       # || abs_path(dirname(__FILE__));
 
-use lib $Bin;
+# use lib $Bin;
+
+# BEGIN {
+    # my $Bin = $ENV{STF_SCRIPT_DIR}
+           # || abs_path(dirname(__FILE__));
+    # unshift(@INC, $Bin) if defined $Bin;
+# }
+
+use lib dirname(__FILE__);
 
 use stfArguments;
 
