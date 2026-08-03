@@ -40,34 +40,27 @@ use FindBin qw($Bin);
 use File::Basename qw(dirname);
 use Cwd qw(abs_path);
 
+our $STF_SCRIPT_DIR;
+
 BEGIN {
     my $script = $0;
-
-    # Normalize Windows separators
     $script =~ s{\\}{/}g;
 
-    my $script_dir = abs_path(dirname($script));
+    $STF_SCRIPT_DIR = abs_path(dirname($script));
 
-    die "Could not determine script directory\n"
-        unless defined $script_dir;
+    die "Cannot determine script directory\n"
+        unless defined $STF_SCRIPT_DIR && -d $STF_SCRIPT_DIR;
 
-    $ENV{STF_SCRIPT_DIR} = $script_dir;
+    unshift(@INC, $STF_SCRIPT_DIR);
 
-    unshift(@INC, $script_dir)
-        if -d $script_dir;
-
-    print STDERR "===== STF DEBUG =====\n";
-    print STDERR "\$0         = $0\n";
-    print STDERR "\$Bin       = $Bin\n";
-    print STDERR "script_dir = $script_dir\n";
-    print STDERR "\@INC:\n";
-    print STDERR join("\n", @INC), "\n";
-    print STDERR "=====================\n";
+    print STDERR "STF_SCRIPT_DIR=$STF_SCRIPT_DIR\n";
 }
 
 # standard perl modules
 use File::Path qw(mkpath rmtree);
 use File::Basename;
+
+print STDERR "INC=" . join("\n", @INC) . "\n";
 
 use stf::stfUtility;
 use stf::Constants qw(:all);
@@ -102,15 +95,21 @@ if (!-e $stf_personal_properties) {
 # Note: directory name is passed into abs_path to workaround old perl bug.
 # my $stf_defaults = abs_path($Bin . "/../config") . "/stf.properties";
 
-my $script_dir = abs_path(dirname(__FILE__));
+my $script_dir = $STF_SCRIPT_DIR;
 
 print STDERR "script_dir=$script_dir\n";
 
 my $config_dir = abs_path("$script_dir/../config");
 
+die "ERROR: Config directory not found: $script_dir/../config\n"
+    unless defined $config_dir && -d $config_dir;
+
 print STDERR "config_dir=$config_dir\n";
 
 my $stf_defaults = "$config_dir/stf.properties";
+
+die "ERROR: stf.properties not found: $stf_defaults\n"
+    unless -f $stf_defaults;
 
 print STDERR "stf_defaults=$stf_defaults\n";
 
