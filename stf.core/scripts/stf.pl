@@ -486,7 +486,7 @@ my ($now, $date, $time) = stf::stfUtility->getNow(date => $TRUE, time => $TRUE);
 			  " -Dlog4j.skipJansi=true" .  # Suppress warning on Windows
 			  " -Djava.system.class.loader=net.adoptopenjdk.stf.runner.StfClassLoader" .
 			  " -Dload.agent.path=$script_dir/../../stf.load/bin/stf.load.jar" .
-			  " -classpath $asm_jar" . $sep . "$asm_commons_jar" . $sep . "$log4j_api_dir" . $sep . "$log4j_core_dir" . $sep . "$Bin/../bin" .
+			  " -classpath $asm_jar" . $sep . "$asm_commons_jar" . $sep . "$log4j_api_dir" . $sep . "$log4j_core_dir" . $sep . "$script_dir/../bin" .
 			  " net.adoptopenjdk.stf.runner.StfRunner" .
 			  " -properties \"$stf_parameters, $stf_personal_properties, $stf_defaults\"" .
 			  " -testDir \"$test_dir\"";
