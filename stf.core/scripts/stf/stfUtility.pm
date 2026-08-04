@@ -192,7 +192,7 @@ sub getPathSeparator {
 	my ($self) = @_;
 
 	my $ps = ":";
-	if ($^O eq 'MSWin32' || $^O eq 'cygwin') {
+	if ($^O eq 'MSWin32') {
 	    $ps = ";";
 	}
 	
