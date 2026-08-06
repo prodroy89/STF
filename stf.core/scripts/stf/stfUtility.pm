@@ -189,14 +189,15 @@ sub writeToFile {
 #  The path separator
 #------------------------------------------------------------#
 sub getPathSeparator {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my $ps = ":";
-	if ($^O eq 'MSWin32') {
-	    $ps = ";";
-	}
-	
-	return $ps;
+    my $ps = ":";
+
+    if ($^O eq 'MSWin32' || $^O eq 'cygwin') {
+        $ps = ";";
+    }
+
+    return $ps;
 }
 
 #------------------------------------------------------------#
