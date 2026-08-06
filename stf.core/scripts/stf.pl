@@ -481,15 +481,27 @@ my ($now, $date, $time) = stf::stfUtility->getNow(date => $TRUE, time => $TRUE);
 	my $log4j_api_dir = findElement($prereqs_root, "/log4j/log4j-api.jar");
 	my $asm_jar = findElement($prereqs_root, "/asm/asm.jar");
 	my $asm_commons_jar = findElement($prereqs_root, "/asm/asm-commons.jar");
+    my $stf_core_jar = "$script_dir/../bin/stf.core.jar";
+    my $stf_load_jar = "$script_dir/../../stf.load/bin/stf.load.jar";
+
+    if ($^O eq 'cygwin') {
+        chomp($stf_core_jar = `cygpath -m "$stf_core_jar"`);
+        chomp($stf_load_jar = `cygpath -m "$stf_load_jar"`);
+    }
 	my $cmd = "$javahome_generation/bin/java " .
 			  "$java_debug_settings" .
 			  " -Dlog4j.skipJansi=true" .  # Suppress warning on Windows
 			  " -Djava.system.class.loader=net.adoptopenjdk.stf.runner.StfClassLoader" .
-			  " -Dload.agent.path=$script_dir/../../stf.load/bin/stf.load.jar" .
-			  " -classpath $asm_jar" . $sep . "$asm_commons_jar" . $sep . "$log4j_api_dir" . $sep . "$log4j_core_dir" . $sep . "$script_dir/../bin/stf.core.jar" .
+			  " -Dload.agent.path=$stf_load_jar" .
+			  " -classpath $asm_jar" . $sep . "$asm_commons_jar" . $sep . "$log4j_api_dir" . $sep . "$log4j_core_dir" . $sep . "$stf_core_jar" .
 			  " net.adoptopenjdk.stf.runner.StfRunner" .
 			  " -properties \"$stf_parameters, $stf_personal_properties, $stf_defaults\"" .
 			  " -testDir \"$test_dir\"";
+              
+    print STDERR "OS=$^O\n";
+    print STDERR "SEP=$sep\n";
+    print STDERR "stf_core_jar=$stf_core_jar\n";
+    print STDERR "stf_load_jar=$stf_load_jar\n";
 
 	_log("Starting process to generate scripts: $cmd");
 	my ($rc, $process) = stf::Commands->run_process(
