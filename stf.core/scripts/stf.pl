@@ -18,49 +18,15 @@
 #
 #
 
-# # import modules
-# use strict;
-# use FindBin qw($Bin);
-# use lib "$Bin";
-
-# # standard perl modules
-# use File::Path qw(mkpath rmtree);
-# use File::Basename;
-
-# use stf::stfUtility;
-# use stf::Constants qw(:all);
-# use stf::Commands qw(:all);
-# use stfArguments;
-
-# use Cwd 'abs_path';
-
 # import modules
 use strict;
 use FindBin qw($Bin);
-use File::Basename qw(dirname);
-use Cwd qw(abs_path);
-
-our $STF_SCRIPT_DIR;
-
-BEGIN {
-    my $script = $0;
-    $script =~ s{\\}{/}g;
-
-    $STF_SCRIPT_DIR = abs_path(dirname($script));
-
-    die "Cannot determine script directory\n"
-        unless defined $STF_SCRIPT_DIR && -d $STF_SCRIPT_DIR;
-
-    unshift(@INC, $STF_SCRIPT_DIR);
-
-    print STDERR "STF_SCRIPT_DIR=$STF_SCRIPT_DIR\n";
-}
+use lib "$Bin";
 
 # standard perl modules
 use File::Path qw(mkpath rmtree);
 use File::Basename;
-
-print STDERR "INC=" . join("\n", @INC) . "\n";
+use Cwd qw(abs_path);
 
 use stf::stfUtility;
 use stf::Constants qw(:all);
@@ -71,7 +37,6 @@ use stfArguments;
 my $results_retention_number = 10;
 # STF fails if the number of results directories exceeds this value
 my $results_retention_limit = 20;
-
 
 output_banner("STF");
 
@@ -95,23 +60,17 @@ if (!-e $stf_personal_properties) {
 # Note: directory name is passed into abs_path to workaround old perl bug.
 # my $stf_defaults = abs_path($Bin . "/../config") . "/stf.properties";
 
-my $script_dir = $STF_SCRIPT_DIR;
-
-print STDERR "script_dir=$script_dir\n";
+my $script_dir = abs_path($Bin);
 
 my $config_dir = abs_path("$script_dir/../config");
 
 die "ERROR: Config directory not found: $script_dir/../config\n"
     unless defined $config_dir && -d $config_dir;
 
-print STDERR "config_dir=$config_dir\n";
-
 my $stf_defaults = "$config_dir/stf.properties";
 
 die "ERROR: stf.properties not found: $stf_defaults\n"
     unless -f $stf_defaults;
-
-print STDERR "stf_defaults=$stf_defaults\n";
 
 # Tell STF argument handling about the property files
 stfArguments::set_argument_data($stf_personal_properties, $stf_defaults);
@@ -485,19 +444,23 @@ my ($now, $date, $time) = stf::stfUtility->getNow(date => $TRUE, time => $TRUE);
     my $stf_load_jar = "$script_dir/../../stf.load/bin/stf.load.jar";
 
     if ($^O eq 'cygwin') {
-        chomp($stf_core_jar = `cygpath -m "$stf_core_jar"`);
-        chomp($stf_load_jar = `cygpath -m "$stf_load_jar"`);
+        chomp($stf_core_jar    = `cygpath -m "$stf_core_jar"`);
+        chomp($stf_load_jar    = `cygpath -m "$stf_load_jar"`);
+        chomp($asm_jar         = `cygpath -m "$asm_jar"`);
+        chomp($asm_commons_jar = `cygpath -m "$asm_commons_jar"`);
+        chomp($log4j_api_dir   = `cygpath -m "$log4j_api_dir"`);
+        chomp($log4j_core_dir  = `cygpath -m "$log4j_core_dir"`);
     }
+    my $classpath = "$asm_jar" . $sep . "$asm_commons_jar" . $sep . "$log4j_api_dir" . $sep . "$log4j_core_dir" . $sep . "$stf_core_jar";
 	my $cmd = "$javahome_generation/bin/java " .
 			  "$java_debug_settings" .
 			  " -Dlog4j.skipJansi=true" .  # Suppress warning on Windows
 			  " -Djava.system.class.loader=net.adoptopenjdk.stf.runner.StfClassLoader" .
 			  " -Dload.agent.path=$stf_load_jar" .
-			  " -classpath $asm_jar" . $sep . "$asm_commons_jar" . $sep . "$log4j_api_dir" . $sep . "$log4j_core_dir" . $sep . "$stf_core_jar" .
+			  " -classpath \"$classpath\"" .
 			  " net.adoptopenjdk.stf.runner.StfRunner" .
 			  " -properties \"$stf_parameters, $stf_personal_properties, $stf_defaults\"" .
 			  " -testDir \"$test_dir\"";
-              
     print STDERR "OS=$^O\n";
     print STDERR "SEP=$sep\n";
     print STDERR "stf_core_jar=$stf_core_jar\n";
